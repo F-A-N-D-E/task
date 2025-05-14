@@ -2,16 +2,25 @@
   "name": "task",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
+  "module": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc && node ./dist/index.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1",
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.17",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
-  }
+  },
+  "proxy": "http://localhost:3000"
 }
