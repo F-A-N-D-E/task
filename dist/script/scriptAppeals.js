@@ -53,9 +53,8 @@ async function setAppeals(date_create, id, message_appeal, respon, status, title
             <p>${title}</p>
             <p>${message_appeal}</p>
             <p>${date_create}</p>
-            <p id="pStatus${id}">Статус: ${status}</p>
-            <p>Ответ:</p>
-            <p id="pRespon${id}">${respon}</p>
+            <p id="pStatus${id}"><b>Статус:</b> ${status}</p>
+            <p id="pRespon${id}"><b>Ответ:</b> ${respon}</p>
             <div id="blockLink${id}">
                 <a href="http://localhost:3000/process/${id}">process</a>
                 <a href="http://localhost:3000/completed/${id}">completed</a>
@@ -86,6 +85,7 @@ async function setAppeals(date_create, id, message_appeal, respon, status, title
                 .then(r => {
                 if (r == 'ok') {
                     pStatus.textContent = `Статус: ${status}`;
+                    pRespon.textContent = 'Ответ: ';
                 }
                 else {
                     alert(r);
@@ -100,11 +100,12 @@ async function setAppeals(date_create, id, message_appeal, respon, status, title
             `;
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                let text = form.querySelector('textarea').value;
                 await fetch(`http://localhost:3000/${status}/${id}?${setQueryString(form)}`)
                     .then(r => r.text()).then(r => {
                     if (r == 'ok') {
                         pStatus.textContent = `Статус: ${status}`;
-                        pRespon.textContent = form.querySelector('textarea').value;
+                        pRespon.textContent = "Ответ: " + text;
                         form.innerHTML = '';
                     }
                     else {

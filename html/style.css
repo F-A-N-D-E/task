@@ -62,3 +62,7 @@ input[type="submit"] {
 .menu>form {
     margin-bottom: 20px;
 }
+
+p[id *="pRespon"] {
+    max-width: 700px;
+}
