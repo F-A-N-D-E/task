@@ -34,9 +34,7 @@ export function setSearch (main: HTMLElement){
 
     formGetForDate.addEventListener('submit', async (e)=>{await serchForDate(e, countainer, 'getForDate')})
     formGetBetweenDate.addEventListener('submit', async (e)=>{await serchForDate(e, countainer, 'getBetweenDate')})
-
 }
-
 
 async function serchForDate(e: Event, countainer:HTMLElement, path: 'getBetweenDate'|'getForDate') {
     e.preventDefault()
@@ -49,141 +47,102 @@ async function serchForDate(e: Event, countainer:HTMLElement, path: 'getBetweenD
 
     if (typeof date == 'string'){
         countainer.innerHTML = `<p>${date}</p>`
+
     } else {
-        
         date.map(elem => {
-           countainer.appendChild(
-                setAppeals(
-                    elem.date_create, 
-                    elem.id,
-                    elem.message_appeal,
-                    elem.respon,
-                    elem.status,
-                    elem.title
-                )
-            ) 
+            setAppeals(
+                elem.date_create, 
+                elem.id,
+                elem.message_appeal,
+                elem.respon,
+                elem.status,
+                elem.title,
+                countainer
+            )
         })
     }
 }
 
 
-function setAppeals (
+async function setAppeals (
     date_create:string,
     id:number,
     message_appeal:string,
     respon:string,
     status:string,
-    title:string
+    title:string,
+    countainer: HTMLElement
 ) {
-    // контейнер для элемента
-    const elemDiv = document.createElement('div');
-    elemDiv.className = 'elem';
-
+    const elemDiv = document.createElement('div')
+    elemDiv.innerHTML = `
+        <div class="elem">
+            <p>${title}</p>
+            <p>${message_appeal}</p>
+            <p>${date_create}</p>
+            <p id="pStatus${id}">Статус: ${status}</p>
+            <p>Ответ:</p>
+            <p id="pRespon${id}">${respon}</p>
+            <div id="blockLink${id}">
+                <a href="http://localhost:3000/process/${id}">process</a>
+                <a href="http://localhost:3000/completed/${id}">completed</a>
+                <a href="http://localhost:3000/reject/${id}">reject</a>
+            </div>
+            <form id="form${id}"></form>
+        </div>
+    `
+    countainer.appendChild(elemDiv)
+    //форма
+    const form = document.getElementById(`form${id}`) as HTMLFormElement;
     // параграфы
-    const pTitle = document.createElement('p');
-    pTitle.textContent = title;
-    elemDiv.appendChild(pTitle);
+    const pStatus = document.getElementById(`pStatus${id}`) as HTMLParagraphElement
+    const pRespon = document.getElementById(`pRespon${id}`) as HTMLParagraphElement
 
-    const pMessage = document.createElement('p');
-    pMessage.textContent = message_appeal;
-    elemDiv.appendChild(pMessage);
-
-    const pDate = document.createElement('p');
-    pDate.textContent = date_create;
-    elemDiv.appendChild(pDate);
-
-    const pStatus = document.createElement('p');
-    pStatus.textContent = 'status: ' + status;
-    elemDiv.appendChild(pStatus);
-
-    // блок для ответа
-    const pAnswerLabel = document.createElement('p');
-    pAnswerLabel.textContent = 'Ответ:';
-    elemDiv.appendChild(pAnswerLabel);
-
-    const pRespon = document.createElement('p');
-    pRespon.textContent = respon;
-    elemDiv.appendChild(pRespon);
-
-    // Блок для формы ответа
-    // Объявляется здесь, чтобы функция sendStatus видела блок формы
-    const form = document.createElement('form')
-
-    // Блок с ссылками
-    const linksDiv = document.createElement('div');
-
-    const linkProcess = document.createElement('a');
-    linkProcess.href = `http://localhost:3000/process/${id}`;
-    linkProcess.textContent = 'process';
-    linkProcess.addEventListener('click', async (e)=> await sendStatus(e,'process'))
-
-    const linkCompleted = document.createElement('a');
-    linkCompleted.href = `http://localhost:3000/completed/${id}`;
-    linkCompleted.textContent = 'completed';
-    linkCompleted.addEventListener('click', async (e)=> await sendStatus(e,'completed'))
-
-    const linkReject = document.createElement('a');
-    linkReject.href = `http://localhost:3000/reject/${id}`;
-    linkReject.textContent = 'reject';
-    linkReject.addEventListener('click', async (e)=> await sendStatus(e,'reject'))
-
-    linksDiv.appendChild(linkProcess);
-    linksDiv.appendChild(linkCompleted);
-    linksDiv.appendChild(linkReject);
-
-    elemDiv.appendChild(linksDiv);
-
-    elemDiv.appendChild(form)
-    
-    return elemDiv; // далее идут вспомогательные функции
-
+    const arrayLink = [...document.getElementById(`blockLink${id}`).children]
+    arrayLink.map(async elem=>{
+        elem.addEventListener('click', async (e) => {
+            await sendStatus(e)
+        })
+    })
 
     // функция для обработчика ссылок
-    async function sendStatus(e:Event, status: 'process'|'reject'|'completed'){
+    async function sendStatus(e: Event){
         e.preventDefault()
+        let status = (e.target as HTMLElement).textContent
+
         form.innerHTML = ''
 
         if (status == 'process'){
             await fetch(`http://localhost:3000/${status}/${id}`).then(r => r.text())
             .then(r=>{
                 if (r=='ok'){
-                    pRespon.textContent = ''
-                    pStatus.textContent = 'status: ' + status;
+                    pStatus.textContent = `Статус: ${status}`
                 }
             })
             .catch(()=>alert('Ошибка БД'))
             
         } else { // создание формы для ответа
-            let textArea = document.createElement('textarea')
-            textArea.placeholder = status == 'reject' ? 'Введите причину отмены' : 'Отчет о выполнении обращения'
-            textArea.name = 'text'
-            form.appendChild(textArea)
-
-            let submit = document.createElement('input')
-            submit.type = 'submit'
-            form.appendChild(submit)
-            
+            form.innerHTML =`
+                <textArea name="text" placeholder="${status == 'reject' ? 'Введите причину отмены' : 'Отчет о выполнении обращения'}"></textArea>
+                <input type="submit" value="Отправить"/>
+            `
             form.addEventListener('submit', async (e)=>{
                 e.preventDefault()
 
                 await fetch(`http://localhost:3000/${status}/${id}?${setQueryString(form)}`)
                 .then(r=>r.text()).then(r=>{
                     if (r == 'ok'){
-                        pRespon.textContent = textArea.value
-                        pStatus.textContent = 'status: ' + status;
+                        pStatus.textContent = `Статус: ${status}`
+                        pRespon.textContent = form.querySelector('textarea').value
 
                        form.innerHTML = ''
                     }
-                })
+                }).catch(()=>alert('Ошибка БД'))
             })
-            
-            return form
         }
 
     }
     
 }
-
 
 function setQueryString(form: HTMLFormElement){
     let formData = new FormData(form)
