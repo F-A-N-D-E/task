@@ -116,9 +116,11 @@ async function setAppeals (
             .then(r=>{
                 if (r=='ok'){
                     pStatus.textContent = `Статус: ${status}`
+                } else {
+                    alert(r)
                 }
             })
-            .catch(()=>alert('Ошибка БД'))
+            .catch(()=>alert('Ошибка в фетче'))
             
         } else { // создание формы для ответа
             form.innerHTML =`
@@ -135,8 +137,11 @@ async function setAppeals (
                         pRespon.textContent = form.querySelector('textarea').value
 
                        form.innerHTML = ''
+                    } else {
+                        alert(r)
                     }
-                }).catch(()=>alert('Ошибка БД'))
+                })
+                .catch(()=>alert('Ошибка в фетче'))
             })
         }
 

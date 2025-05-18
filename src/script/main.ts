@@ -14,6 +14,7 @@ getCreatePage.addEventListener('click', async (e) => {
 
     await fetch('http://localhost:3000/createPage')
     .then((r) => r.text()).then(r => main.innerHTML = r)
+    .catch(()=>alert('Ошибка в фетче'))
 
     setScriptForm()
 })
@@ -29,6 +30,9 @@ cancelProcess.addEventListener('click', async (e)=>{
     .then(r=>r.text()).then(r=>{
         if (r == 'ok'){
             window.location.reload()
+        } else {
+            alert(r)
         }
     })
+    .catch(()=>alert('Ошибка в фетче'))
 })

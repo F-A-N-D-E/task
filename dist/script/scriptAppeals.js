@@ -87,8 +87,11 @@ async function setAppeals(date_create, id, message_appeal, respon, status, title
                 if (r == 'ok') {
                     pStatus.textContent = `Статус: ${status}`;
                 }
+                else {
+                    alert(r);
+                }
             })
-                .catch(() => alert('Ошибка БД'));
+                .catch(() => alert('Ошибка в фетче'));
         }
         else { // создание формы для ответа
             form.innerHTML = `
@@ -104,7 +107,11 @@ async function setAppeals(date_create, id, message_appeal, respon, status, title
                         pRespon.textContent = form.querySelector('textarea').value;
                         form.innerHTML = '';
                     }
-                }).catch(() => alert('Ошибка БД'));
+                    else {
+                        alert(r);
+                    }
+                })
+                    .catch(() => alert('Ошибка в фетче'));
             });
         }
     }

@@ -8,7 +8,8 @@ setSearch(main);
 getCreatePage.addEventListener('click', async (e) => {
     e.preventDefault();
     await fetch('http://localhost:3000/createPage')
-        .then((r) => r.text()).then(r => main.innerHTML = r);
+        .then((r) => r.text()).then(r => main.innerHTML = r)
+        .catch(() => alert('Ошибка в фетче'));
     setScriptForm();
 });
 getViewPage.addEventListener('click', async (e) => {
@@ -22,5 +23,9 @@ cancelProcess.addEventListener('click', async (e) => {
         if (r == 'ok') {
             window.location.reload();
         }
-    });
+        else {
+            alert(r);
+        }
+    })
+        .catch(() => alert('Ошибка в фетче'));
 });

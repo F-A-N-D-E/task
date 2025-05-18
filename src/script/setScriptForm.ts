@@ -21,6 +21,7 @@ export default async function setScriptForm() {
 
             await (await fetch(`http://localhost:3000/create?${queryStr.toString()}`)).text()
             .then(r=>alert(r))
+            .catch((e)=>console.log(`ошибка в фетче ${e}`))
             form.reset()
         }
     })
