@@ -114,8 +114,8 @@ async function setAppeals (
             await fetch(`http://localhost:3000/${status}/${id}`).then(r => r.text())
             .then(r=>{
                 if (r=='ok'){
-                    pStatus.textContent = `Статус: ${status}`
-                    pRespon.textContent = 'Ответ: '
+                    pStatus.innerHTML = `<b>Статус:</b> ${status}`
+                    pRespon.innerHTML = '<b>Ответ:</b> '
                 } else {
                     alert(r)
                 }
@@ -134,8 +134,8 @@ async function setAppeals (
                 await fetch(`http://localhost:3000/${status}/${id}?${setQueryString(form)}`)
                 .then(r=>r.text()).then(r=>{
                     if (r == 'ok'){
-                        pStatus.textContent = `Статус: ${status}`
-                        pRespon.textContent = "Ответ: " + text
+                        pStatus.innerHTML = `<b>Статус:</b> ${status}`
+                        pRespon.innerHTML = "<b>Ответ:</b> " + text
 
                        form.innerHTML = ''
                     } else {
