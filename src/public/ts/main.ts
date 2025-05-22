@@ -1,13 +1,12 @@
-import { setSearch } from "./scriptAppeals.js"
-import setScriptForm from "./setScriptForm.js"
+import { SetSearch } from "./ScriptAppeals.js"
+import ScriptForm from "./ScriptForm.js"
 
-const main = document.getElementById('main')
-const getCreatePage = document.getElementById('createPage')
-const getViewPage = document.getElementById('viewPage')
+const main = document.getElementById('main') as HTMLDivElement
+const getCreatePage = document.getElementById('createPage') as HTMLAnchorElement
+const getViewPage = document.getElementById('viewPage') as HTMLAnchorElement
+const cancelProcess = document.getElementById('cancelProcess') as HTMLAnchorElement
 
-const cancelProcess = document.getElementById('cancelProcess')
-
-setSearch(main)
+SetSearch(main)
 
 getCreatePage.addEventListener('click', async (e) => {
     e.preventDefault()
@@ -16,12 +15,12 @@ getCreatePage.addEventListener('click', async (e) => {
     .then((r) => r.text()).then(r => main.innerHTML = r)
     .catch(()=>alert('Ошибка в фетче'))
 
-    setScriptForm()
+    ScriptForm()
 })
 
 getViewPage.addEventListener('click', async(e)=>{
     e.preventDefault()
-    setSearch(main)
+    SetSearch(main)
 })
 
 cancelProcess.addEventListener('click', async (e)=>{

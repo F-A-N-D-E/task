@@ -1,4 +1,4 @@
-export default async function setScriptForm() {
+export default async function ScriptForm() {
    const form = document.getElementById('form') as HTMLFormElement | null
 
     form.addEventListener('submit', async(e)=>{
@@ -8,10 +8,9 @@ export default async function setScriptForm() {
 
         if (!formData.get('title') || !formData.get('message_appeal')){
             alert('Заголовок и текст обращения должны быть заполнены')
-        } else {
-            
-            for (let [key, val] of formData.entries()){
 
+        } else {
+            for (let [key, val] of formData.entries()){
                 if (!val){
                     queryStr.set(key, setDate())
                 } else {

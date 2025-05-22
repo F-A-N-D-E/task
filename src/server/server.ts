@@ -1,7 +1,9 @@
-import { readFile } from 'fs/promises';
-import { Appeal, setRecords, sequelize } from "./sequelize/Sequelize.js";
-import {ElemQueryCreate, TypeQueryGetForDate, TypeQueryGetBetweenDate} from './type/type.js'
+import fs, { readFile } from 'fs/promises';
+import { Appeal, setRecords, sequelize } from "../config/Sequelize.js";
+import {ElemQueryCreate, TypeQueryGetForDate, TypeQueryGetBetweenDate, ElemResponServer} from '../../@types/type.js'
 import express, { Request, Response } from 'express';
+import { conf } from '../config/conf.js';
+import SendResponForGetRequest from './utils/SendResponForGetRequest.js';
 
 const app = express()
 
@@ -30,10 +32,13 @@ app.get('/create', async (req: Request, res: Response) => { // создает о
   .catch(()=>res.send('Ошибка БД'))
 })
 
-app.get('/createPage', async (req: Request, res: Response) => { // отдает html текст
+app.get('/createPage', async (req: Request, res: Response) => { // отдает html документ
   let formPage: string
-  await readFile('./html/form.html', 'utf-8').then(r=> formPage = r)
+  
+  await readFile('./src/public/html/form.html', 'utf-8')
+  .then(r=>formPage = r)
   .catch(()=>formPage = 'Файл html не найден')
+
   res.send(formPage)
 })
 
@@ -51,7 +56,7 @@ app.get('/getBetweenDate', async (req: Request, res: Response) => {//ищет п
     .then(r=>date = r[0])
     .catch(()=>date = 'Ошибка БД')
 
-    sendResponForGetRequest(date, res)
+    SendResponForGetRequest(date, res)
 
   } else if(query.from && !query.to){// есть только от куда
     await sequelize.query(
@@ -62,12 +67,12 @@ app.get('/getBetweenDate', async (req: Request, res: Response) => {//ищет п
     .then(r=>date = r[0])
     .catch(()=>date = 'Ошибка БД')
 
-    sendResponForGetRequest(date, res)
+    SendResponForGetRequest(date, res)
 
   }else if (!query.from && !query.to){ // отсутствие дат
     res.send({date: 'Пожалуйста, введите дату диапазона'})
 
-  } else if (query.from && query.to){// по диапазона
+  } else if (query.from && query.to){// по диапазону
     await sequelize.query(`
       SELECT * FROM appeal
       WHERE date_create BETWEEN :dateFrom AND :dateTo;`,
@@ -80,7 +85,7 @@ app.get('/getBetweenDate', async (req: Request, res: Response) => {//ищет п
     .then(r=>date = r[0])
     .catch(()=>date = 'Ошибка БД')
 
-    sendResponForGetRequest(date, res)
+    SendResponForGetRequest(date, res)
   }
 })
 
@@ -98,7 +103,7 @@ app.get('/getForDate', async (req: Request, res: Response) => {//ищет по �
     .then(r=>date = r[0])
     .catch(()=>date = 'Ошибка БД')
 
-    sendResponForGetRequest(date, res)
+    SendResponForGetRequest(date, res)
     
   } else {
     res.send({ date: 'Пожалуйста, введите дату'})
@@ -153,18 +158,4 @@ app.get('/cancelProcess', async (req: Request, res: Response) => { // отмен
   .catch(()=>res.send('Ошибка БД'))
 })
 
-app.listen(3000) // дальше идут вспомогательные функции
-
-function sendResponForGetRequest(date: any, res:Response){//я не смог придумать название((
-// она либо отправляет данные с БД,
-// либо отправляет сообщение
-  if(date.length == 0){
-      res.send({
-        date: 'Обращения отсутствуют за указанный период'
-      })
-    } else { // здесь может отдавать сообщение об ошибке, либо данные
-      res.send({
-        date: date
-      })
-    }
-}
+app.listen(conf.PORT)

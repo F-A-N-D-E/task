@@ -1,7 +1,8 @@
 import { DataTypes, Sequelize } from "sequelize";
+import { conf } from "./conf.js";
 
-export const sequelize = new Sequelize('task', 'root', '1234', { // Ваши 'БД', 'пользователь', 'пароль'
-  host: 'localhost',
+export const sequelize = new Sequelize(conf.DB_NAME, conf.DB_USERNAME, conf.DB_PASSWORD, {
+  host: conf.HOST,
   dialect: "mysql",
   define: {
     freezeTableName: true,

@@ -1,6 +1,6 @@
-import { ElemResponServer } from "../type/type"
+import { ElemResponServer } from "../../../@types/type"
 
-export function setSearch (main: HTMLElement){
+export function SetSearch (main: HTMLElement){
     main.innerHTML = `
     <div class="menu">
         <p>Получить список:</p>
@@ -28,9 +28,9 @@ export function setSearch (main: HTMLElement){
     </div>
     `
     
-    const formGetForDate = document.getElementById('formGetForDate')
-    const formGetBetweenDate = document.getElementById('formGetBetweenDate')
-    const countainer = document.getElementById('countainer')
+    const formGetForDate = document.getElementById('formGetForDate') as HTMLFormElement
+    const formGetBetweenDate = document.getElementById('formGetBetweenDate') as HTMLFormElement
+    const countainer = document.getElementById('countainer') as HTMLDivElement
 
     formGetForDate.addEventListener('submit', async (e)=>{await serchForDate(e, countainer, 'getForDate')})
     formGetBetweenDate.addEventListener('submit', async (e)=>{await serchForDate(e, countainer, 'getBetweenDate')})
@@ -90,9 +90,7 @@ async function setAppeals (
         </div>
     `
     countainer.appendChild(elemDiv)
-    //форма
     const form = document.getElementById(`form${id}`) as HTMLFormElement;
-    // параграфы
     const pStatus = document.getElementById(`pStatus${id}`) as HTMLParagraphElement
     const pRespon = document.getElementById(`pRespon${id}`) as HTMLParagraphElement
 
@@ -122,7 +120,7 @@ async function setAppeals (
             })
             .catch(()=>alert('Ошибка в фетче'))
             
-        } else { // создание формы для ответа
+        } else { // создание формы для записи ответа
             form.innerHTML =`
                 <textArea name="text" placeholder="${status == 'reject' ? 'Введите причину отмены' : 'Отчет о выполнении обращения'}"></textArea>
                 <input type="submit" value="Отправить"/>
