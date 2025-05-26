@@ -1,4 +1,6 @@
 import { ElemResponServer } from "../../../@types/type"
+import validateStringLength from "../../validation/validateStringLength.js"
+import viewLengthInput from "./utils/viewLengthInput.js"
 
 export function SetSearch (main: HTMLElement){
     main.innerHTML = `
@@ -123,7 +125,7 @@ async function setAppeals (
             .then(r=>{
                 if (r=='ok'){
                     pStatus.innerHTML = "<b>Статус:</b> " + pathStatus
-                        pRespon.innerHTML = "<b>Ответ:</b> "
+                    pRespon.innerHTML = "<b>Ответ:</b> "
                 } else {
                     alert(r)
                 }
@@ -133,25 +135,34 @@ async function setAppeals (
         } else { // создание формы для записи ответа
             form.innerHTML =`
                 <textArea name="text" placeholder="${pathStatus == 'reject' ? 'Введите причину отмены' : 'Отчет о выполнении обращения'}"></textArea>
+                <span id="CharCount">0/255</span>
                 <input type="submit" value="Отправить"/>
             `
+            const textArea = form.querySelector('textarea') as HTMLTextAreaElement
+            const charCount = form.querySelector('#CharCount') as HTMLSpanElement
+            
+            textArea.addEventListener('input', (e)=>viewLengthInput(e, charCount))
             
             const handleSubmit = async (e:Event) => {
                 e.preventDefault()
-                let text = form.querySelector('textarea').value
                 
-                await fetch(`http://localhost:3000/${pathStatus}/${id}?${setQueryString(form)}`)
-                .then(r=>r.text()).then(r=>{
-                    if (r == 'ok'){
-                        pStatus.innerHTML = "<b>Статус:</b> " + pathStatus
-                        pRespon.innerHTML = "<b>Ответ:</b> " + text
+                if(!validateStringLength(textArea.value)){
+                    alert('Ваш ответ превысил допустимую длину')
 
-                       form.innerHTML = ''
-                    } else {
-                        alert(r)
-                    }
-                })
-                .catch(()=>alert('Ошибка в фетче'))
+                } else {
+                    await fetch(`http://localhost:3000/${pathStatus}/${id}?${setQueryString(form)}`)
+                    .then(r=>r.text()).then(r=>{
+                        if (r == 'ok'){
+                            pStatus.innerHTML = "<b>Статус:</b> " + pathStatus
+                            pRespon.innerHTML = "<b>Ответ:</b> " + textArea.value
+
+                        form.innerHTML = ''
+                        } else {
+                            alert(r)
+                        }
+                    })
+                    .catch(()=>alert('Ошибка в фетче'))
+                }
             }   
             
             form._submitHandler = handleSubmit;
