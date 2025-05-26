@@ -1,4 +1,5 @@
 import validateStringLength from "../../validation/validateStringLength.js"
+import getNowDate from "./utils/getNowDate.js"
 import viewLengthInput from "./utils/viewLengthInput.js"
 
 export default async function ScriptForm() {
@@ -16,22 +17,20 @@ export default async function ScriptForm() {
         e.preventDefault()
         let queryStr = new URLSearchParams()
         let formData = new FormData(form)
-        let title = formData.get('title') as string,
-            message_appeal = formData.get('message_appeal') as string
 
-        if (!title || !message_appeal){
+        if (!title.value || !message_appeal.value){
             alert('Заголовок и текст обращения должны быть заполнены')
 
-        } else if (title && message_appeal){
-            if (!validateStringLength(title)){
+        } else if (title.value && message_appeal.value){
+            if (!validateStringLength(title.value)){
                 alert('Вы превысили длину заголовка')
-            } else if (!validateStringLength(message_appeal)){
+            } else if (!validateStringLength(message_appeal.value)){
                 alert('Вы превысили длину обращения')
 
             } else {
                 for (let [key, val] of formData.entries()){
-                    if (!val){
-                        queryStr.set(key, setDate())
+                    if (!val){ // сюда может дойти только пустое поле даты
+                        queryStr.set(key, getNowDate())
                     } else {
                         queryStr.set(key, val as string)
                     }
@@ -43,13 +42,5 @@ export default async function ScriptForm() {
             }
         }
     })
-
-    function setDate (){
-        let now = new Date()
-        let month = now.getMonth() + 1
-        let day = now.getDate()
-
-        return `${now.getFullYear()}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`
-    } 
 }
 

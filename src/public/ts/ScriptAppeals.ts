@@ -1,5 +1,6 @@
 import { ElemResponServer } from "../../../@types/type"
 import validateStringLength from "../../validation/validateStringLength.js"
+import setQueryStringFromForm from "./utils/setQueryStringFromForm.js"
 import viewLengthInput from "./utils/viewLengthInput.js"
 
 export function SetSearch (main: HTMLElement){
@@ -38,13 +39,14 @@ export function SetSearch (main: HTMLElement){
     formGetBetweenDate.addEventListener('submit', async (e)=>{await serchForDate(e, countainer, 'getBetweenDate')})
 }
 
-async function serchForDate(e: Event, countainer:HTMLElement, path: 'getBetweenDate'|'getForDate') {
+
+async function serchForDate(e: Event, countainer:HTMLDivElement, path: 'getBetweenDate'|'getForDate') {
     e.preventDefault()
     countainer.innerHTML = ''
     
     let date: ElemResponServer[] | string
 
-    await fetch(`http://localhost:3000/${path}?${setQueryString(e.target as HTMLFormElement)}`)
+    await fetch(`http://localhost:3000/${path}?${setQueryStringFromForm(e.target as HTMLFormElement)}`)
     .then(r=>r.json()).then(r => date = r.date)
 
     if (typeof date == 'string'){
@@ -150,13 +152,13 @@ async function setAppeals (
                     alert('Ваш ответ превысил допустимую длину')
 
                 } else {
-                    await fetch(`http://localhost:3000/${pathStatus}/${id}?${setQueryString(form)}`)
+                    await fetch(`http://localhost:3000/${pathStatus}/${id}?${setQueryStringFromForm(form)}`)
                     .then(r=>r.text()).then(r=>{
                         if (r == 'ok'){
                             pStatus.innerHTML = "<b>Статус:</b> " + pathStatus
                             pRespon.innerHTML = "<b>Ответ:</b> " + textArea.value
 
-                        form.innerHTML = ''
+                            form.innerHTML = ''
                         } else {
                             alert(r)
                         }
@@ -171,15 +173,4 @@ async function setAppeals (
 
     }
     
-}
-
-function setQueryString(form: HTMLFormElement){
-    let formData = new FormData(form)
-    let queryStr = new URLSearchParams()
-    
-    for (let [key, val] of formData.entries()){
-            queryStr.set(key, val as string)
-    }
-
-    return queryStr.toString()
 }
