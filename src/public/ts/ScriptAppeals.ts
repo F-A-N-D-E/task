@@ -49,7 +49,7 @@ async function serchForDate(e: Event, countainer:HTMLElement, path: 'getBetweenD
         countainer.innerHTML = `<p>${date}</p>`
 
     } else {
-        date.map(elem => {
+        date.forEach(elem => {
             setAppeals(
                 elem.date_create, 
                 elem.id,
@@ -71,6 +71,7 @@ async function setAppeals (
     respon:string,
     status:string,
     title:string,
+
     countainer: HTMLElement
 ) {
     const elemDiv = document.createElement('div')
@@ -90,30 +91,39 @@ async function setAppeals (
         </div>
     `
     countainer.appendChild(elemDiv)
-    const form = document.getElementById(`form${id}`) as HTMLFormElement;
-    const pStatus = document.getElementById(`pStatus${id}`) as HTMLParagraphElement
-    const pRespon = document.getElementById(`pRespon${id}`) as HTMLParagraphElement
 
-    const arrayLink = [...document.getElementById(`blockLink${id}`).children]
-    arrayLink.map(async elem=>{
-        elem.addEventListener('click', async (e) => {
-            await sendStatus(e)
-        })
+    const form = elemDiv.querySelector(`#form${id}`) as HTMLFormElement;
+    const pStatus = elemDiv.querySelector(`#pStatus${id}`) as HTMLParagraphElement
+    const pRespon = elemDiv.querySelector(`#pRespon${id}`) as HTMLParagraphElement
+
+    const blockLink = elemDiv.querySelector(`#blockLink${id}`)
+
+    blockLink.addEventListener('click', async (e) => {
+        let target = e.target as HTMLElement
+
+        if (target.tagName === 'A'){
+            e.preventDefault()
+            let href = target.getAttribute('href')
+            let pathStatus = new URL(href).pathname.split('/')[1];
+            await sendStatus(pathStatus)
+        }
     })
 
     // функция для обработчика ссылок
-    async function sendStatus(e: Event){
-        e.preventDefault()
-        let status = (e.target as HTMLElement).textContent
-
+    async function sendStatus(pathStatus: string){
+        // Удаляет предыдущий обработчик submit, если он есть
+        if ((form as any)._submitHandler) {
+            form.removeEventListener('submit', (form as any)._submitHandler);
+        }
+        
         form.innerHTML = ''
 
-        if (status == 'process'){
-            await fetch(`http://localhost:3000/${status}/${id}`).then(r => r.text())
+        if (pathStatus == 'process'){
+            await fetch(`http://localhost:3000/${pathStatus}/${id}`).then(r => r.text())
             .then(r=>{
                 if (r=='ok'){
-                    pStatus.innerHTML = `<b>Статус:</b> ${status}`
-                    pRespon.innerHTML = '<b>Ответ:</b> '
+                    pStatus.innerHTML = "<b>Статус:</b> " + pathStatus
+                        pRespon.innerHTML = "<b>Ответ:</b> "
                 } else {
                     alert(r)
                 }
@@ -122,17 +132,18 @@ async function setAppeals (
             
         } else { // создание формы для записи ответа
             form.innerHTML =`
-                <textArea name="text" placeholder="${status == 'reject' ? 'Введите причину отмены' : 'Отчет о выполнении обращения'}"></textArea>
+                <textArea name="text" placeholder="${pathStatus == 'reject' ? 'Введите причину отмены' : 'Отчет о выполнении обращения'}"></textArea>
                 <input type="submit" value="Отправить"/>
             `
-            form.addEventListener('submit', async (e)=>{
+            
+            const handleSubmit = async (e:Event) => {
                 e.preventDefault()
                 let text = form.querySelector('textarea').value
-
-                await fetch(`http://localhost:3000/${status}/${id}?${setQueryString(form)}`)
+                
+                await fetch(`http://localhost:3000/${pathStatus}/${id}?${setQueryString(form)}`)
                 .then(r=>r.text()).then(r=>{
                     if (r == 'ok'){
-                        pStatus.innerHTML = `<b>Статус:</b> ${status}`
+                        pStatus.innerHTML = "<b>Статус:</b> " + pathStatus
                         pRespon.innerHTML = "<b>Ответ:</b> " + text
 
                        form.innerHTML = ''
@@ -141,7 +152,10 @@ async function setAppeals (
                     }
                 })
                 .catch(()=>alert('Ошибка в фетче'))
-            })
+            }   
+            
+            form._submitHandler = handleSubmit;
+            form.addEventListener('submit', handleSubmit);
         }
 
     }
