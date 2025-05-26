@@ -1,4 +1,4 @@
-import fs, { readFile } from 'fs/promises';
+import fs from 'fs';
 import { Appeal, setRecords, sequelize } from "../config/Sequelize.js";
 import {ElemQueryCreate, TypeQueryGetForDate, TypeQueryGetBetweenDate, ElemResponServer} from '../../@types/type.js'
 import express, { Request, Response } from 'express';
@@ -29,17 +29,19 @@ app.get('/create', async (req: Request, res: Response) => { // создает о
     }
   })
   .then(()=>res.send('успешно'))
-  .catch(()=>res.send('Ошибка БД'))
+  .catch(()=>res.status(404).send('Ошибка БД'))
 })
 
 app.get('/createPage', async (req: Request, res: Response) => { // отдает html документ
-  let formPage: string
-  
-  await readFile('./src/public/html/form.html', 'utf-8')
-  .then(r=>formPage = r)
-  .catch(()=>formPage = 'Файл html не найден')
+  const stream = fs.createReadStream('./src/public/html/form.html');
 
-  res.send(formPage)
+  stream.on('error', () => {
+    res.status(404).send('Файл html не найден');
+  });
+
+  res.setHeader('Content-Type', 'text/html');
+
+  stream.pipe(res);
 })
 
 app.get('/getBetweenDate', async (req: Request, res: Response) => {//ищет по диапазону
