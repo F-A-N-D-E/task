@@ -25,6 +25,7 @@ export default async function ScriptForm() {
         } else if (title.value && message_appeal.value){
             if (!validateStringLength(title.value)){
                 alert('Вы превысили длину заголовка')
+                
             } else if (!validateStringLength(message_appeal.value)){
                 alert('Вы превысили длину обращения')
 
