@@ -1,4 +1,5 @@
 import { ElemResponServer } from "../../../@types/type"
+import validateOnlySpaces from "../../validation/validateOnlySpaces.js"
 import validateStringLength from "../../validation/validateStringLength.js"
 import setQueryStringFromForm from "./utils/setQueryStringFromForm.js"
 import viewLengthInput from "./utils/viewLengthInput.js"
@@ -151,6 +152,9 @@ async function setAppeals (
                 if(!validateStringLength(textArea.value)){
                     alert('Ваш ответ превысил допустимую длину')
 
+                }else if (!validateOnlySpaces(textArea.value) || !textArea.value) {
+                    alert('Текст ответа должен быть заполнен')
+                    
                 } else {
                     await fetch(`http://localhost:3000/${pathStatus}/${id}?${setQueryStringFromForm(form)}`)
                     .then(r=>r.text()).then(r=>{

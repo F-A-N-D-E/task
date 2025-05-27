@@ -1,3 +1,4 @@
+import validateOnlySpaces from "../../validation/validateOnlySpaces.js"
 import validateStringLength from "../../validation/validateStringLength.js"
 import getNowDate from "./utils/getNowDate.js"
 import viewLengthInput from "./utils/viewLengthInput.js"
@@ -18,7 +19,7 @@ export default async function ScriptForm() {
         let queryStr = new URLSearchParams()
         let formData = new FormData(form)
 
-        if (!title.value || !message_appeal.value){
+        if (!title.value || !message_appeal.value || !validateOnlySpaces(title.value) || !validateOnlySpaces(message_appeal.value)){
             alert('Заголовок и текст обращения должны быть заполнены')
 
         } else if (title.value && message_appeal.value){
