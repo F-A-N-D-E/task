@@ -27,7 +27,8 @@ export default async function CreateAppeal (req: Request, res: Response) {
           replacements: {
             title: query.title,
             message_appeal: query.message_appeal,
-            date: query.date
+            date: query.date // дату не проверяю, потому что возможность выставить ее
+            // стоит для проверяющего
           }
         })
         

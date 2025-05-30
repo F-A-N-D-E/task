@@ -39,11 +39,6 @@ import CreateAppeal from "./router/UserOperationAppeal/CreateAppeal.js";
     app.get('/reject/:id', SetRejectStatus)// выставляет статус reject
 
     app.get('/cancelProcess', SetCancelAllProcess) // отменить все, что в работе
-
-    app.use((err: Error, req: Request, res: Response) => { // обработчик для не перехваченных ошибок
-      console.error('Общая ошибка:', err)
-      res.status(500).send({ err: 'Внутренняя ошибка сервера' })
-    })
     
     app.listen(conf.PORT, () => {
       console.log(`Сервер запущен на порту: ${conf.PORT}`)
