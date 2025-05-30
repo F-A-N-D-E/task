@@ -1,6 +1,6 @@
 type Date = `${number}${number}${number}${number}-${number}${number}-${number}${number}`
 
-export type ElemResponServer = {
+export type TypeElemAppeal = {
     id: number,
     status: 'new'|'process'|'reject'|'completed',
     title: string,
@@ -18,9 +18,8 @@ export type TypeQueryGetBetweenDate = {
     to?: Date
 }
 
-export type ElemQueryCreate = {
+export type TypeElemQueryCreate = {
     title: string,
     message_appeal: string,
     date: Date
 }
-

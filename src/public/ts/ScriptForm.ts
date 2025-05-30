@@ -1,5 +1,3 @@
-import validateOnlySpaces from "../../validation/validateOnlySpaces.js"
-import validateStringLength from "../../validation/validateStringLength.js"
 import getNowDate from "./utils/getNowDate.js"
 import viewLengthInput from "./utils/viewLengthInput.js"
 
@@ -19,30 +17,24 @@ export default async function ScriptForm() {
         let queryStr = new URLSearchParams()
         let formData = new FormData(form)
 
-        if (!title.value || !message_appeal.value || !validateOnlySpaces(title.value) || !validateOnlySpaces(message_appeal.value)){
-            alert('Заголовок и текст обращения должны быть заполнены')
-
-        } else if (title.value && message_appeal.value){
-            if (!validateStringLength(title.value)){
-                alert('Вы превысили длину заголовка')
-                
-            } else if (!validateStringLength(message_appeal.value)){
-                alert('Вы превысили длину обращения')
-
+        for (let [key, val] of formData.entries()){
+            if (key == 'date'){
+                queryStr.set(key, getNowDate())
             } else {
-                for (let [key, val] of formData.entries()){
-                    if (!val){ // сюда может дойти только пустое поле даты
-                        queryStr.set(key, getNowDate())
-                    } else {
-                        queryStr.set(key, val as string)
-                    }
-                }
-
-                await (await fetch(`http://localhost:3000/create?${queryStr.toString()}`)).text()
-                .then(r=>alert(r))
-                .catch((e)=>console.log(`ошибка в фетче ${e}`))
+                queryStr.set(key, val as string)
             }
         }
+
+        await fetch(`http://localhost:3000/create?${queryStr.toString()}`)
+        .then(r => r.json())
+        .then(r => {
+            if (!r.err){
+                alert('Успешно')
+            } else {
+                alert(r.err)
+            }
+        })
+        .catch((e)=>alert(`ошибка в фетче ${e}`))
     })
 }
 

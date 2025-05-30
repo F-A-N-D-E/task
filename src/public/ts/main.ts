@@ -26,11 +26,12 @@ getViewPage.addEventListener('click', async(e)=>{
 cancelProcess.addEventListener('click', async (e)=>{
     e.preventDefault()
     await fetch('http://localhost:3000/cancelProcess')
-    .then(r=>r.text()).then(r=>{
-        if (r == 'ok'){
+    .then(r=>r.json())
+    .then( r => {
+        if (!r.err){
             window.location.reload()
         } else {
-            alert(r)
+            alert(r.err)
         }
     })
     .catch(()=>alert('Ошибка в фетче'))

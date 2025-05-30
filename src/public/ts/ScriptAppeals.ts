@@ -1,4 +1,4 @@
-import { ElemResponServer } from "../../../@types/type"
+import { TypeElemAppeal } from "../../../@types/type"
 import validateOnlySpaces from "../../validation/validateOnlySpaces.js"
 import validateStringLength from "../../validation/validateStringLength.js"
 import setQueryStringFromForm from "./utils/setQueryStringFromForm.js"
@@ -45,27 +45,29 @@ async function serchForDate(e: Event, countainer:HTMLDivElement, path: 'getBetwe
     e.preventDefault()
     countainer.innerHTML = ''
     
-    let date: ElemResponServer[] | string
+    let data: TypeElemAppeal[]
 
     await fetch(`http://localhost:3000/${path}?${setQueryStringFromForm(e.target as HTMLFormElement)}`)
-    .then(r=>r.json()).then(r => date = r.date)
+    .then(r=>r.json())
+    .then(r => {
+        if (!r.err){
+            data = r.data
+        } else {
+            countainer.innerHTML = `<p>${r.err}</p>`
+        }
+    })
 
-    if (typeof date == 'string'){
-        countainer.innerHTML = `<p>${date}</p>`
-
-    } else {
-        date.forEach(elem => {
-            setAppeals(
-                elem.date_create, 
-                elem.id,
-                elem.message_appeal,
-                elem.respon,
-                elem.status,
-                elem.title,
-                countainer
-            )
-        })
-    }
+    data.forEach(elem => {
+        setAppeals(
+            elem.date_create, 
+            elem.id,
+            elem.message_appeal,
+            elem.respon,
+            elem.status,
+            elem.title,
+            countainer
+        )
+    })
 }
 
 
@@ -124,13 +126,14 @@ async function setAppeals (
         form.innerHTML = ''
 
         if (pathStatus == 'process'){
-            await fetch(`http://localhost:3000/${pathStatus}/${id}`).then(r => r.text())
-            .then(r=>{
-                if (r=='ok'){
+            await fetch(`http://localhost:3000/${pathStatus}/${id}`)
+            .then(r => r.json())
+            .then(r => {
+                if (!r.err){
                     pStatus.innerHTML = "<b>Статус:</b> " + pathStatus
                     pRespon.innerHTML = "<b>Ответ:</b> "
                 } else {
-                    alert(r)
+                    alert(r.err)
                 }
             })
             .catch(()=>alert('Ошибка в фетче'))
@@ -149,26 +152,19 @@ async function setAppeals (
             const handleSubmit = async (e:Event) => {
                 e.preventDefault()
                 
-                if(!validateStringLength(textArea.value)){
-                    alert('Ваш ответ превысил допустимую длину')
+                await fetch(`http://localhost:3000/${pathStatus}/${id}?${setQueryStringFromForm(form)}`)
+                .then(r=>r.json())
+                .then(r=>{
+                    if (!r.err){
+                        pStatus.innerHTML = "<b>Статус:</b> " + pathStatus
+                        pRespon.innerHTML = "<b>Ответ:</b> " + textArea.value
 
-                }else if (!validateOnlySpaces(textArea.value) || !textArea.value) {
-                    alert('Текст ответа должен быть заполнен')
-                    
-                } else {
-                    await fetch(`http://localhost:3000/${pathStatus}/${id}?${setQueryStringFromForm(form)}`)
-                    .then(r=>r.text()).then(r=>{
-                        if (r == 'ok'){
-                            pStatus.innerHTML = "<b>Статус:</b> " + pathStatus
-                            pRespon.innerHTML = "<b>Ответ:</b> " + textArea.value
-
-                            form.innerHTML = ''
-                        } else {
-                            alert(r)
-                        }
-                    })
-                    .catch(()=>alert('Ошибка в фетче'))
-                }
+                        form.innerHTML = ''
+                    } else {
+                        alert(r.err)
+                    }
+                })
+                .catch(()=>alert('Ошибка в фетче'))
             }   
             
             form._submitHandler = handleSubmit;
