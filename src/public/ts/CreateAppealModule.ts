@@ -1,7 +1,25 @@
 import getNowDate from "./utils/getNowDate.js"
 import viewLengthInput from "./utils/viewLengthInput.js"
 
-export default async function ScriptForm() {
+export default async function CreateAppealModule(main: HTMLDivElement) {
+    main.innerHTML = `
+        <form id="form" action="http://localhost:3000/create">
+
+            <input id="title" type="text" name="title" placeholder="Заголовок" >    
+            <span id="titleCharCount">0/255</span>
+
+            <textarea id="message_appeal" name="message_appeal" placeholder="Текст" ></textarea>
+            <span id="messageCharCount">0/255</span>
+            
+            <label>
+                <input type="date" value="" name="date"> Данное поле предназначено для проверки. Если оставить его пустым, то выставится сегодняшняя дата
+            </label>
+
+            <input type="submit" value="отправить">
+        
+        </form>
+    `
+    
     const form = document.getElementById('form') as HTMLFormElement
 
     const title = form.querySelector('#title') as HTMLInputElement
@@ -30,6 +48,9 @@ export default async function ScriptForm() {
         .then(r => {
             if (!r.err){
                 alert('Успешно')
+                form.reset()
+                titleCharCount.textContent = '0/255'
+                messageCharCount.textContent = '0/255'
             } else {
                 alert(r.err)
             }

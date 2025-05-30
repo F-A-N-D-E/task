@@ -59,24 +59,6 @@ import validateSpaces from '../validation/validateOnlySpaces.js';
       }
     })
 
-    app.get('/createPage', async (req: Request, res: Response) => { // отдает html документ
-      try {
-        const stream = fs.createReadStream('./src/public/html/form.html');
-
-        stream.on('error', () => {
-          res.status(404).send('Файл html не найден');
-        });
-
-        res.setHeader('Content-Type', 'text/html');
-
-        stream.pipe(res);
-
-      } catch (err) {
-        console.error('Ошибка сервера при отправке страницы:' + err);
-        res.status(500).send('Ошибка сервера при отправке страницы');
-      }
-    })
-
     app.get('/getBetweenDate', async (req: Request, res: Response) => {//ищет по диапазону
       try {
         let query: TypeQueryGetBetweenDate = req.query;

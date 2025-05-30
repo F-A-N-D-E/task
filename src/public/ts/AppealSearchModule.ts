@@ -1,10 +1,8 @@
 import { TypeElemAppeal } from "../../../@types/type"
-import validateOnlySpaces from "../../validation/validateOnlySpaces.js"
-import validateStringLength from "../../validation/validateStringLength.js"
 import setQueryStringFromForm from "./utils/setQueryStringFromForm.js"
 import viewLengthInput from "./utils/viewLengthInput.js"
 
-export function SetSearch (main: HTMLElement){
+export default function AppealSearchModule (main: HTMLDivElement){
     main.innerHTML = `
     <div class="menu">
         <p>Получить список:</p>
@@ -57,7 +55,7 @@ async function serchForDate(e: Event, countainer:HTMLDivElement, path: 'getBetwe
         }
     })
 
-    data.forEach(elem => {
+    if (data) data.forEach(elem => {
         setAppeals(
             elem.date_create, 
             elem.id,
