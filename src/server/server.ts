@@ -1,13 +1,7 @@
-import { Appeal, setRecords } from "../config/Sequelize.js";
+import { Appeal, setRecords } from "./config/Sequelize.js";
 import express, { NextFunction, Request, Response } from 'express';
-import { conf } from '../config/conf.js';
-import SetProcessStatus from './router/EmployeeOperationAppeal/SetStatusAppeal/SetProcessStatus.js';
-import SetCompletedStatus from "./router/EmployeeOperationAppeal/SetStatusAppeal/SetCompletedStatus.js";
-import SetRejectStatus from "./router/EmployeeOperationAppeal/SetStatusAppeal/SetRejectStatus.js";
-import SetCancelAllProcess from "./router/EmployeeOperationAppeal/SetStatusAppeal/SetCancelAllProcess.js";
-import GetForDate from "./router/EmployeeOperationAppeal/SearchAppeal/GetForDate.js";
-import GetBetweenDate from "./router/EmployeeOperationAppeal/SearchAppeal/GetBetweenDate.js";
-import CreateAppeal from "./router/UserOperationAppeal/CreateAppeal.js";
+import { conf } from './config/conf.js';
+import router from "./router/appealRouter.js";
 
 (async () => {
   try {
@@ -25,21 +19,9 @@ import CreateAppeal from "./router/UserOperationAppeal/CreateAppeal.js";
       res.header('Access-Control-Allow-Origin', '*');
       next();
     });
-
-    app.get('/create', CreateAppeal) // создает обращение
-
-    app.get('/getBetweenDate', GetBetweenDate)//ищет по диапазону
-
-    app.get('/getForDate', GetForDate) //ищет по конкретной дате
-
-    app.get('/process/:id', SetProcessStatus) // выставляет статус process
-
-    app.get('/completed/:id', SetCompletedStatus)// выставляет статус completed
-
-    app.get('/reject/:id', SetRejectStatus)// выставляет статус reject
-
-    app.get('/cancelProcess', SetCancelAllProcess) // отменить все, что в работе
     
+    app.use('/', router)
+
     app.listen(conf.PORT, () => {
       console.log(`Сервер запущен на порту: ${conf.PORT}`)
     }).on('error', (err) => {

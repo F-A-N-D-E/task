@@ -2,7 +2,7 @@ type Date = `${number}${number}${number}${number}-${number}${number}-${number}${
 
 export type TypeElemAppeal = {
     id: number,
-    status: 'new'|'process'|'reject'|'completed',
+    status: 'new'|'work'|'cancel'|'completed',
     title: string,
     message_appeal: string,
     respon?: string,

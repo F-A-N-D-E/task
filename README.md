@@ -2,9 +2,11 @@
 
 `git clone https://github.com/F-A-N-D-E/task.git`
 
+`cd ./task`
+
 `npm install`
 
-Для проверки необходимо поставить свою конфигурацию в `./src/config/conf.ts`
+Для проверки необходимо поставить свою конфигурацию в `./src/servert/config/conf.ts`
 
 `npm start`
 

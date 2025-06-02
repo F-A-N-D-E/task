@@ -1,9 +1,9 @@
-import getNowDate from "./utils/getNowDate.js"
-import viewLengthInput from "./utils/viewLengthInput.js"
+import getNowDate from "../utils/getNowDate.js"
+import viewLengthInput from "../utils/viewLengthInput.js"
 
 export default async function CreateAppealModule(main: HTMLDivElement) {
     main.innerHTML = `
-        <form id="form" action="http://localhost:3000/create">
+        <form id="form" action="#">
 
             <input id="title" type="text" name="title" placeholder="Заголовок" >    
             <span id="titleCharCount">0/255</span>

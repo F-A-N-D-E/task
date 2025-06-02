@@ -1,20 +1,20 @@
-import { TypeElemAppeal } from "../../../@types/type"
-import setQueryStringFromForm from "./utils/setQueryStringFromForm.js"
-import viewLengthInput from "./utils/viewLengthInput.js"
+import { TypeElemAppeal } from "../../../../@types/type"
+import setQueryStringFromForm from "../utils/setQueryStringFromForm.js"
+import viewLengthInput from "../utils/viewLengthInput.js"
 
 export default function AppealSearchModule (main: HTMLDivElement){
     main.innerHTML = `
     <div class="menu">
         <p>Получить список:</p>
 
-        <form id="formGetForDate" action="http://localhost:3000/getForDate">
+        <form id="formGetForDate" action="#">
             <label for="">
                 за <input type="date" name="date">
             </label>
             <input type="submit" value="Поиск">
         </form>
 
-        <form id="formGetBetweenDate" action="http://localhost:3000/getBetweenDate">
+        <form id="formGetBetweenDate" action="#">
             <label for="">
                 от <input type="date" name="from">
             </label>
@@ -34,12 +34,12 @@ export default function AppealSearchModule (main: HTMLDivElement){
     const formGetBetweenDate = document.getElementById('formGetBetweenDate') as HTMLFormElement
     const countainer = document.getElementById('countainer') as HTMLDivElement
 
-    formGetForDate.addEventListener('submit', async (e)=>{await serchForDate(e, countainer, 'getForDate')})
-    formGetBetweenDate.addEventListener('submit', async (e)=>{await serchForDate(e, countainer, 'getBetweenDate')})
+    formGetForDate.addEventListener('submit', async (e)=>{await serchForDate(e, countainer, 'byDate')})
+    formGetBetweenDate.addEventListener('submit', async (e)=>{await serchForDate(e, countainer, 'betweenDate')})
 }
 
 
-async function serchForDate(e: Event, countainer:HTMLDivElement, path: 'getBetweenDate'|'getForDate') {
+async function serchForDate(e: Event, countainer:HTMLDivElement, path: 'betweenDate'|'byDate') {
     e.preventDefault()
     countainer.innerHTML = ''
     
@@ -88,9 +88,9 @@ async function setAppeals (
             <p id="pStatus${id}"><b>Статус:</b> ${status}</p>
             <p id="pRespon${id}"><b>Ответ:</b> ${respon}</p>
             <div id="blockLink${id}">
-                <a href="http://localhost:3000/process/${id}">process</a>
+                <a href="http://localhost:3000/work/${id}">work</a>
                 <a href="http://localhost:3000/completed/${id}">completed</a>
-                <a href="http://localhost:3000/reject/${id}">reject</a>
+                <a href="http://localhost:3000/cancel/${id}">cancel</a>
             </div>
             <form id="form${id}"></form>
         </div>
@@ -123,7 +123,7 @@ async function setAppeals (
         
         form.innerHTML = ''
 
-        if (pathStatus == 'process'){
+        if (pathStatus == 'work'){
             await fetch(`http://localhost:3000/${pathStatus}/${id}`)
             .then(r => r.json())
             .then(r => {
@@ -138,7 +138,7 @@ async function setAppeals (
             
         } else { // создание формы для записи ответа
             form.innerHTML =`
-                <textArea name="text" placeholder="${pathStatus == 'reject' ? 'Введите причину отмены' : 'Отчет о выполнении обращения'}"></textArea>
+                <textArea name="text" placeholder="${pathStatus == 'cancel' ? 'Введите причину отмены' : 'Отчет о выполнении обращения'}"></textArea>
                 <span id="CharCount">0/255</span>
                 <input type="submit" value="Отправить"/>
             `
