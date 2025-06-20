@@ -1,5 +1,5 @@
-export default function validDate (date: string) {
-    const regex = /^\d{4}-\d{2}-\d{2}$/;
+export default function validDate(date: string) {
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
   if (!regex.test(date)) {
     return false;
   }
@@ -8,12 +8,12 @@ export default function validDate (date: string) {
   const year = parseInt(yearStr);
   const month = parseInt(monthStr);
   const day = parseInt(dayStr);
-  
-  if (month < 1 || month > 12) return false
+
+  if (month < 1 || month > 12) return false;
 
   const daysInMonth = new Date(year, month, 0).getDate();
 
-  if (day < 1 || day > daysInMonth) return false
+  if (day < 1 || day > daysInMonth) return false;
 
   return true;
 }
